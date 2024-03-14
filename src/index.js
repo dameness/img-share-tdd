@@ -2,6 +2,7 @@ let express = require("express");
 let app = express();
 let mongoose = require("mongoose");
 let user = require("./models/User")
+let bcrypt = require("bcrypt");
 
 app.use(express.urlencoded({extended:false}))/
 app.use(express.json());
@@ -24,7 +25,25 @@ app.post("/user", async (req, res) => {
   try{
 
     let { name, email, password } = req.body;
+
+    if(name === "" || email === "" || password === ""){
+      res.sendStatus(400);
+      return;
+    }
+
+    let user = await User.findOne({"email": email})
+
+    if(user != undefined){
+      res.status(400).json({error:"E-mail já cadastrado!"});
+      return;
+    }
+
+    let salt = await bcrypt.genSalt(10);
+    let hash = await bcrypt.hash(password, salt);
+    password = hash;
+
     let newUser = new User({name, email, password});
+
     await newUser.save();
     res.json({email});
 
