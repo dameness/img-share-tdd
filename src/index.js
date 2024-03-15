@@ -53,4 +53,10 @@ app.post("/user", async (req, res) => {
 
 })
 
+//endpoint usado no "afterAll" na test suite de user
+app.delete("/user/:email", async (req, res) => {
+  await User.deleteOne({"email": req.params.email})
+  res.sendStatus(200);
+})
+
 module.exports = app;
