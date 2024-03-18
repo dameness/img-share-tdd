@@ -68,6 +68,7 @@ describe("Cadastro de usuário", () => {
 });
 
 describe("Autenticação", () => {
+
   test("Deve retornar um token quando fizer login", () => {
     return request
       .post("/auth")
@@ -79,5 +80,39 @@ describe("Autenticação", () => {
       .catch(err => {
         throw new Error(err);
       })
+  })
+
+  test("Deve impedir o login de um usuário não cadastrado", () => {
+
+    let random = Date.now();
+
+    return request
+      .post("/auth")
+      .send({email: random, password: random})
+      .then(res => {
+          expect(res.statusCode).toEqual(403);
+          expect(res.body.errors.email).toEqual("E-mail não cadastrado!");
+      })
+      .catch(err => {
+        throw new Error(err);
+      })
+
+  })
+
+  test("Deve impedir o login de um usuário cadastrado com uma senha inválida", () => {
+
+    let random = Date.now();
+
+    return request
+      .post("/auth")
+      .send({email: mainUser.email, password: random})
+      .then(res => {
+          expect(res.statusCode).toEqual(403);
+          expect(res.body.errors.password).toEqual("Senha inválida!");
+      })
+      .catch(err => {
+        throw new Error(err);
+      })
+
   })
 })
