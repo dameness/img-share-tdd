@@ -81,7 +81,7 @@ app.post("/auth", async (req, res) => {
       return;
     }
   
-    jwt.sign({email}, secret, {expiresIn:'48h'}, (err, token) => {
+    jwt.sign({ email, name: user.name, id: user._id }, secret, {expiresIn:'48h'}, (err, token) => {
   
       if(err){
         console.log(err);
